@@ -1,18 +1,22 @@
 release: lit/markdown/source d-files
-	@mkdir -p bin
+	@if not exist bin mkdir bin
 	dub build --build=release
-	@rm bin/tangle
+	@del bin\tangle.exe
 
 debug: lit/markdown/source d-files
-	@mkdir -p bin
+	@if not exist bin mkdir bin
 	dub build
 
 bin/tangle:
 	dub --root=lit/tangle build
 
 d-files: bin/tangle
-	@mkdir -p source
-	bin/tangle -odir source lit/*.lit
+	@if not exist source mkdir source
+	bin/tangle -odir source lit/main.lit lit/parser.lit lit/tangler.lit lit/util.lit lit/weaver.lit
+
+doc: bin/lit
+	@if not exist doc mkdir doc
+	bin\lit -w -odir doc lit/main.lit lit/parser.lit lit/tangler.lit lit/util.lit lit/weaver.lit
 
 test: lit
 	dub test

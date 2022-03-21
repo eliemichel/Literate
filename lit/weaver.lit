@@ -41,6 +41,9 @@ string[][string] redefLocations;
 string[][string] addLocations;
 string[][string] useLocations;
 
+bool useUniqueDefLocations = true;
+int nextDefLocation = 1;
+
 foreach (chapter; p.chapters) {
     foreach (s; chapter.sections) {
         foreach (block; s.blocks) {
@@ -59,7 +62,12 @@ foreach (chapter; p.chapters) {
                     if (block.name !in redefLocations || !redefLocations[block.name].canFind(to!string(s.num)))
                         redefLocations[block.name] ~= chapter.num() ~ ":" ~ to!string(s.num);
                 } else {
-                    defLocations[block.name] = chapter.num() ~ ":" ~ to!string(s.num);
+                    if (useUniqueDefLocations) {
+                        defLocations[block.name] = "1:" ~ to!string(nextDefLocation);
+                        ++nextDefLocation;
+                    } else {
+                        defLocations[block.name] = chapter.num() ~ ":" ~ to!string(s.num);
+                    }
                 }
 
                 foreach (lineObj; block.lines) {
@@ -422,8 +430,13 @@ is a root code block.
 @{Find the definition location}
 @{Make the title bold if necessary}
 
-output ~= "<span class=\"codeblock_name\">{" ~ name ~ 
-          " <a href=\"" ~ htmlFile ~ "#" ~ def ~ "\">" ~ defLocation ~ "</a>}" ~ extra ~ "</span>\n";
+string htmlId = "";
+if (block.modifiers.length == 0) {
+    htmlId="id=\"codeblock-" ~ def ~ "\"";
+}
+
+output ~= "<span class=\"codeblock_name\" " ~ htmlId ~ ">{" ~ name ~ 
+          " <a href=\"" ~ htmlFile ~ "#codeblock-" ~ def ~ "\">" ~ defLocation ~ "</a>}" ~ extra ~ "</span>\n";
 ---
 
 To find the definition location we use the handy `defLocation` array that we made
@@ -532,7 +545,7 @@ if (strip(strippedLine[2..$ - 1]) !in defLocations) {
     if (chapter == c.num()) {
         defLocation = def[index + 1..$];
     }
-    def = ", <a href=\"" ~ htmlFile ~ "#" ~ def ~ "\">" ~ defLocation ~ "</a>";
+    def = ", <a href=\"" ~ htmlFile ~ "#codeblock-" ~ def ~ "\">" ~ defLocation ~ "</a>";
 }
 output ~= "<span class=\"nocode pln\">" ~ leadingWS(line) ~ "{" ~ strippedLine[2..$ - 1] ~ def ~ "}</span>\n";
 ---
