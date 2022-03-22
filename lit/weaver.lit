@@ -55,25 +55,28 @@ foreach (chapter; p.chapters) {
 
                 @{Check if it's a root block}
 
+                string loc = "";
+                if (useUniqueDefLocations) {
+                    loc = "1:" ~ to!string(nextDefLocation);
+                    ++nextDefLocation;
+                } else {
+                    loc = chapter.num() ~ ":" ~ to!string(s.num);
+                }
+
                 if (block.modifiers.canFind(Modifier.additive)) {
                     if (block.name !in addLocations || !addLocations[block.name].canFind(to!string(s.num)))
-                        addLocations[block.name] ~= chapter.num() ~ ":" ~ to!string(s.num);
+                        addLocations[block.name] ~= loc;
                 } else if (block.modifiers.canFind(Modifier.redef)) {
                     if (block.name !in redefLocations || !redefLocations[block.name].canFind(to!string(s.num)))
-                        redefLocations[block.name] ~= chapter.num() ~ ":" ~ to!string(s.num);
+                        redefLocations[block.name] ~= loc;
                 } else {
-                    if (useUniqueDefLocations) {
-                        defLocations[block.name] = "1:" ~ to!string(nextDefLocation);
-                        ++nextDefLocation;
-                    } else {
-                        defLocations[block.name] = chapter.num() ~ ":" ~ to!string(s.num);
-                    }
+                    defLocations[block.name] = loc;
                 }
 
                 foreach (lineObj; block.lines) {
                     string line = strip(lineObj.text);
                     if (line.startsWith("@{") && line.endsWith("}")) {
-                        useLocations[line[2..$ - 1]] ~= chapter.num() ~ ":" ~ to!string(s.num);
+                        useLocations[line[2..$ - 1]] ~= loc;
                     }
                 }
             }
@@ -594,7 +597,7 @@ string linkLocations(string text, string[][string] sectionLocations, Program p, 
                 if (chapter == c.num()) {
                     locName = loc[index + 1..$];
                 }
-                loc = "<a href=\"" ~ htmlFile ~ "#" ~ loc ~ "\">" ~ locName ~ "</a>";
+                loc = "<a href=\"" ~ htmlFile ~ "#codeblock-" ~ loc ~ "\">" ~ locName ~ "</a>";
                 if (i == 0) {
                     seealso ~= loc;
                 } else if (i == locations.length - 1) {
