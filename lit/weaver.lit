@@ -309,7 +309,7 @@ output ~= "<body onload=\"prettyPrint()\">\n" ~
 
 foreach (s; c.sections) {
     string noheading = s.title == "" ? " class=\"noheading\"" : "";
-    output ~= "<a name=\"" ~ c.num() ~ ":" ~ to!string(s.num) ~ "\"><div class=\"section\"><h" ~ 
+    output ~= "<div class=\"section\"><a name=\"" ~ c.num() ~ ":" ~ to!string(s.num) ~ "\"><h" ~ 
               to!string(sectionDepth) ~ noheading ~ ">" ~ to!string(s.num) ~ ". " ~ s.title ~ 
               "</h" ~ to!string(sectionDepth) ~ "></a>\n";
 
@@ -525,7 +525,7 @@ string strippedLine = strip(line);
 if (strippedLine.startsWith("@{") && strippedLine.endsWith("}")) {
     @{Link a used codeblock}
 } else { 
-    output ~= line.replace("&", "&amp;").replace(">", "&gt;").replace("<", "&lt;") ~ "\n";
+    output ~= strip(line, "", "\n\r").replace("&", "&amp;").replace(">", "&gt;").replace("<", "&lt;") ~ "\n";
 }
 ---
 
