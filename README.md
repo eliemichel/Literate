@@ -107,8 +107,10 @@ Literate is made with the [D programming language](https://dlang.org) so you mus
 
 ```
 $ cd Literate
-$ make
+$ make release
 ```
+
+**NB** On Windows, you can add to the path `G:\D\dmd2\windows\bin` and `E:\msys64\usr\bin` (paths are for myself as a memo, adapt to your use case ofx).
 
 You can find the binary in path/to/Literate/bin (you may want to add this to your path or move it to `/usr/local/bin`).
 
